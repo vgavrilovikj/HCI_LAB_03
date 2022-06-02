@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    <a href="{% url 'profile' post.user.id %}">
+        <h4 class="card-subtitle mb-4 text-muted">@{{ post.user.username }}</h4>
+    </a>
+    <p class="card-text">{{ post.text }}</p>
+    {% if request.user.is_authenticated %}
+        {% if request.user.id == post.user.id %}
+            <a href="{% url 'edit-post' post.id %}">
+                <button class="btn btn-primary">Edit Post</button>
+            </a>
+
+            <a href="{% url 'delete-post' post.id %}">
+                <button class="btn btn-danger">Delete Post</button>
+            </a>
+        {% endif %}
+    {% endif %}
+    <hr>
+    <h5 class="mb-3 mt-5">Comments</h5>
+    {% for comment in comments %}
+        <div>
+            <p class="mb-0">{{ comment.body }}</p>
+            <small>@{{ comment.user.username }}</small>
+            <hr>
+        </div>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="text" name="body" placeholder="Write your comment" class="form-control">
+                <button class="btn btn-secondary mt-3">Add comment</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

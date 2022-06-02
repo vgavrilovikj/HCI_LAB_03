@@ -1,0 +1,60 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center mt-3 mb-5">User Profile</h1>
+        </div>
+    </div>
+    {% if request.user.is_authenticated %}
+        {% if request.user.id == user.id %}
+            <div class="row">
+                <div class="col">
+                    <a href="{% url 'edit-profile' request.user.id %}">
+                        <button class="btn btn-secondary">Edit profile</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="row">Username</th>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Email</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th scope="row">First Name</th>
+            <td>{{ user.first_name }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Last Name</th>
+            <td>{{ user.last_name }}</td>
+        </tr>
+        {% for userinfo in user.userinfo_set.all %}
+            <tr>
+                <th scope="row">Description</th>
+                <td>{{ userinfo.description }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Location</th>
+                <td>{{ userinfo.location }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Age</th>
+                <td>{{ userinfo.age }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
