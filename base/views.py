@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.models import User
 from .models import Post, Comment, UserInfo
-from .forms import PostForm, UserForm
+from .forms import PostForm, UserForm, CommentForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -29,8 +29,8 @@ def loginPage(request):
 
 
 @login_required(login_url='login')
-def profilePage(request, pk):
-    user = User.objects.get(id=pk)
+def profilePage(request):
+    user = User.objects.get(id=request.user.id)
     context = {'user': user}
     return render(request, 'profile.html', context)
 
@@ -76,6 +76,25 @@ def post(request, pk):
     }
 
     return render(request, 'post.html', context)
+
+
+@login_required(login_url='login')
+def editComment(request, commentId, postId):
+    comment = Comment.objects.get(id=commentId)
+    post = Post.objects.get(id=postId)
+    form = CommentForm(instance=comment)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    if request.user.id == comment.user.id or request.user.id == post.user.id:
+        context = {'form': form}
+        return render(request, 'edit-comment.html', context)
+    else:
+        return redirect('home')
 
 
 @login_required(login_url='login')
